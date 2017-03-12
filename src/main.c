@@ -1,4 +1,4 @@
-#include <stm32f401xe.h>
+#include <stm32f4xx.h>
 
 
 /*
@@ -49,16 +49,15 @@ int main(void) {
          * LED on
          * -> see section 8.4.7 in the manual
          */
-        LED_GPIO->BSRRL = (1 << LED_PIN);
+        LED_GPIO->BSRR = (1 << LED_PIN);
 
         delay(200);
 
         /*
          *  LED off
          */
-        LED_GPIO->BSRRH = (1 << LED_PIN);
+        LED_GPIO->BSRR = (1 << (LED_PIN+16));
 
         delay(200);
     }
 }
-

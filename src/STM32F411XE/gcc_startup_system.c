@@ -1,14 +1,14 @@
 /**
  * @file
  * vector table, startup code and SystemInit
- * for STM32F401Xe
+ * for STM32F411xE
  *
  * (c) 2016 Bernd Kreuss <prof7bit@gmail.com>
  * This file is public domain, you may use it, modify 
  * it or reproduce it for whatever purpose you want.
  */
 
-#include "stm32f401xe.h"
+#include "stm32f4xx.h"
 
 
 /*
@@ -61,28 +61,40 @@ WEAK void SystemInit(void) {
     /* Enable Power Control clock */
     RCC->APB1ENR |= RCC_APB1LPENR_PWRLPEN;
     
-    /* Regulator voltage scaling output selection: Scale 2 */
-    PWR->CR |= PWR_CR_VOS_1;
+    /*
+     * Regulator voltage scaling output selection: Scale 3
+     * See chapter 3.4.1 in the STM32F411xE reference manual
+     */
+    PWR->CR |= PWR_CR_VOS;
 
     /* Wait until HSI ready */
     while ((RCC->CR & RCC_CR_HSIRDY) == 0);
 
-    /* Store calibration value */
+    /* Set PVD level to 2.6V */
     PWR->CR |= (uint32_t)(16 << 3);
 
     /* Disable main PLL */
     RCC->CR &= ~(RCC_CR_PLLON);
+
+    /* Set HSE to bypass mode (signal from external clock, i.e. ST-Link) */
+    RCC->CR |= RCC_CR_HSEBYP;
+
+    /* Enable HSE */
+    RCC->CR |= RCC_CR_HSEON;
     
-    /* Wait until PLL ready (disabled) */
+    /* Wait until PLL unlocked (disabled) */
     while ((RCC->CR & RCC_CR_PLLRDY) != 0);
+
+    /* Wait for HSE to become ready */
+    while ((RCC->CR & RCC_CR_HSERDY) == 0);
 
     /*
      * Configure Main PLL
-     * HSI as clock input
-     * fvco = 336MHz
-     * fpllout = 84MHz
+     * HSE in bypass mode as clock input (from ST-Link)
+     * fvco = 384Mhz
+     * SYSCLK = 96MHz
      * fusb = 48MHz
-     * PLLM = 16
+     * PLLM = 8
      * PLLN = 336
      * PLLP = 4
      * PLLQ = 7
@@ -93,9 +105,10 @@ WEAK void SystemInit(void) {
      */
     RCC->PLLCFGR = 0x2000000UL  // reset value of reserved bits
                  | (7UL << 24)  // PLLQ
-                 | (1UL << 16)  // PLLP
+                 | (4UL << 16)  // PLLP
                  | (336UL << 6) // PLLN
-                 | (16UL << 0); // PLLM
+                 | (8UL << 0) // PLLM
+                 | RCC_PLLCFGR_PLLSRC_HSE; // HSE as source
 
     /* PLL On */
     RCC->CR |= RCC_CR_PLLON;
@@ -103,20 +116,24 @@ WEAK void SystemInit(void) {
     /* Wait until PLL is locked */
     while ((RCC->CR & RCC_CR_PLLRDY) == 0);
 
+
     /*
      * FLASH configuration block
      * enable instruction cache
      * enable prefetch
-     * set latency to 2WS (3 CPU cycles)
+     * set latency to 3 wait states (4 CPU cycles)
      */
     FLASH->ACR |= FLASH_ACR_ICEN 
                 | FLASH_ACR_PRFTEN 
-                | FLASH_ACR_LATENCY_2WS;
+                | FLASH_ACR_LATENCY_3WS;
 
-    /* Set clock source to PLL */
+    /* Set clock source to PLL*/
     RCC->CFGR |= RCC_CFGR_SW_PLL;
     /* Check clock source */
     while ((RCC->CFGR & RCC_CFGR_SWS_PLL) != RCC_CFGR_SWS_PLL);
+
+    /* Turn off HSI */
+    RCC->CR &= ~(RCC_CR_HSION);
 
     /* Set HCLK (AHB1) prescaler (DIV1) */
     RCC->CFGR &= ~(RCC_CFGR_HPRE);
@@ -132,7 +149,7 @@ WEAK void SystemInit(void) {
                 | DBGMCU_CR_DBG_STANDBY
                 | DBGMCU_CR_DBG_STOP;
 
-    SystemCoreClock = 84000000UL;
+    SystemCoreClock = 96000000UL;
 }
 
 

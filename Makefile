@@ -5,12 +5,12 @@
 NAME      = hello_world
 #DEBUG	  = 1
 
-SRCS      = $(wildcard src/STM32F401XE/*.c)
+SRCS      = $(wildcard src/STM32F411XE/*.c)
 SRCS  	 += $(wildcard src/*.c)
 
-INCDIRS   = src/STM32F401XE
+INCDIRS   = src/STM32F411XE
 
-LSCRIPT   = src/STM32F401XE/gcc_linker.ld
+LSCRIPT   = src/STM32F411XE/gcc_linker.ld
 
 DEFINES   = $(EXDEFINES)
 
@@ -24,6 +24,7 @@ CFLAGS   += -mfloat-abi=hard
 CFLAGS   += -mfpu=fpv4-sp-d16
 CFLAGS   += -std=gnu11
 CFLAGS   += -ggdb
+CFLAGS   += -DSTM32F411xE
 
 ifdef DEBUG
     CFLAGS   += -Og

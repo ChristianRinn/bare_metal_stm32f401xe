@@ -1,7 +1,7 @@
-# Minimal gcc makefile project for STM32F401xE
+# Minimal gcc makefile project for STM32F411xE
 
 This contains the absolute bare minimum needed
-to compile a blinky example for the STM32F401xE
+to compile a blinky example for the STM32F411xE
 on the command line with gcc and make and then
 flash it to the demo board with OpenOCD. It is
 using the original headers provided by STM and
@@ -20,7 +20,7 @@ and are in the file gcc_startup_system.c.
 ## Prerequisites
 
 * install Linux on your PC
-* get a NUCLEO-F401RE demo board from STMicroelectronics
+* get a NUCLEO-F411RE demo board from STMicroelectronics
 * install the official arm-none-eabi-gcc toolchain from Launchpad
 * install OpenOCD
 
