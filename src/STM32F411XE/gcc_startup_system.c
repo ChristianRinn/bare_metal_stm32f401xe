@@ -91,8 +91,8 @@ WEAK void SystemInit(void) {
     /*
      * Configure Main PLL
      * HSE in bypass mode as clock input (from ST-Link)
-     * fvco = 384Mhz
-     * SYSCLK = 96MHz
+     * fvco = 336MHz
+     * SYSCLK = 84MHz
      * fusb = 48MHz
      * PLLM = 8
      * PLLN = 336
@@ -149,7 +149,7 @@ WEAK void SystemInit(void) {
                 | DBGMCU_CR_DBG_STANDBY
                 | DBGMCU_CR_DBG_STOP;
 
-    SystemCoreClock = 96000000UL;
+    SystemCoreClock = 84000000UL;
 }
 
 
