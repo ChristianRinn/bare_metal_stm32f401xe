@@ -28,6 +28,7 @@ CFLAGS   += -DSTM32F411xE
 
 ifdef DEBUG
     CFLAGS   += -Og
+    CFLAGS   += -g3
 else
     CFLAGS   += -Os -flto
 endif
