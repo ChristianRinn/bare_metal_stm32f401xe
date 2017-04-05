@@ -169,6 +169,19 @@ WEAK void SystemCoreClockUpdate(void) {
 
 
 /**
+ * The default empty exception handler. Its address will be placed
+ * in the vector table for all exceptions for which the linker cannot
+ * find an implementation elsewhere in the code.
+ *
+ * This function is defined with a weak symbol to allow the
+ * application to override it and provide its own implementation.
+ */
+WEAK void Default_Handler(void) {
+    while(1);
+}
+
+
+/**
  * This is the entry point right after reset. The address of this
  * function will be placed in the vector table as the reset handler
  * so code execution after reset will begin exactly here.
@@ -193,19 +206,6 @@ NAKED void Reset_Handler(void) {
     main();
 
     Default_Handler();
-}
-
-
-/**
- * The default empty exception handler. Its address will be placed
- * in the vector table for all exceptions for which the linker cannot
- * find an implementation elsewhere in the code.
- *
- * This function is defined with a weak symbol to allow the
- * application to override it and provide its own implementation.
- */
-WEAK void Default_Handler(void) {
-    while(1);
 }
 
 
