@@ -3,7 +3,7 @@
 
 /*
  * The green LED is connected to port A5,
- * -> see schematic of NUCLEO-F401RE board
+ * -> see schematic of NUCLEO-F411RE board
  */
 #define LED_GPIO        GPIOA
 #define LED_PIN         5

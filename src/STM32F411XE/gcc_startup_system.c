@@ -90,24 +90,24 @@ WEAK void SystemInit(void) {
 
     /*
      * Configure Main PLL
-     * HSE in bypass mode as clock input (from ST-Link)
-     * fvco = 336MHz
-     * SYSCLK = 84MHz
+     * HSE in bypass mode as clock input (from ST-Link, 8MHz)
+     * fvco = 384MHz
+     * SYSCLK = 96MHz
      * fusb = 48MHz
-     * PLLM = 8
-     * PLLN = 336
+     * PLLM = 4
+     * PLLN = 192
      * PLLP = 4
-     * PLLQ = 7
+     * PLLQ = 8
      * 
      * Please see the reference manual for the meaning of the
      * bits and the mapping between the above numbers and the
      * actual values written to the PLLCFGR register.
      */
     RCC->PLLCFGR = 0x2000000UL  // reset value of reserved bits
-                 | (7UL << 24)  // PLLQ
+                 | (4UL << 0)   // PLLM
+                 | (192UL << 6) // PLLN
                  | (4UL << 16)  // PLLP
-                 | (336UL << 6) // PLLN
-                 | (8UL << 0) // PLLM
+                 | (8UL << 24)  // PLLQ
                  | RCC_PLLCFGR_PLLSRC_HSE; // HSE as source
 
     /* PLL On */
@@ -127,14 +127,6 @@ WEAK void SystemInit(void) {
                 | FLASH_ACR_PRFTEN 
                 | FLASH_ACR_LATENCY_3WS;
 
-    /* Set clock source to PLL*/
-    RCC->CFGR |= RCC_CFGR_SW_PLL;
-    /* Check clock source */
-    while ((RCC->CFGR & RCC_CFGR_SWS_PLL) != RCC_CFGR_SWS_PLL);
-
-    /* Turn off HSI */
-    RCC->CR &= ~(RCC_CR_HSION);
-
     /* Set HCLK (AHB1) prescaler (DIV1) */
     RCC->CFGR &= ~(RCC_CFGR_HPRE);
 
@@ -144,12 +136,21 @@ WEAK void SystemInit(void) {
     /* SET APB2 High speed prescaler (APB2) DIV1 */
     RCC->CFGR &= ~(RCC_CFGR_PPRE2);
 
+    /* Set clock source to PLL*/
+    RCC->CFGR |= RCC_CFGR_SW_PLL;
+    /* Check clock source */
+    while ((RCC->CFGR & RCC_CFGR_SWS_PLL) != RCC_CFGR_SWS_PLL);
+
+    /* Turn off HSI */
+    RCC->CR &= ~(RCC_CR_HSION);
+
+
     /* allow debug even during sleep modes (otherwise debugger would be of little use) */
     DBGMCU->CR |= DBGMCU_CR_DBG_SLEEP
                 | DBGMCU_CR_DBG_STANDBY
                 | DBGMCU_CR_DBG_STOP;
 
-    SystemCoreClock = 84000000UL;
+    SystemCoreClock = 96000000UL;
 }
 
 
