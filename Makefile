@@ -3,7 +3,7 @@
 ########################################
 
 NAME      = hello_world
-#DEBUG	  = 1
+DEBUG	  = 1
 
 SRCS      = $(wildcard src/STM32F411XE/*.c)
 SRCS  	 += $(wildcard src/*.c)
@@ -25,12 +25,12 @@ CFLAGS   += -mfpu=fpv4-sp-d16
 CFLAGS   += -std=gnu11
 CFLAGS   += -ggdb
 CFLAGS   += -DSTM32F411xE
+CFLAGS   += -g3
 
-ifdef DEBUG
+ifeq (DEBUG, 1)
     CFLAGS   += -Og
-    CFLAGS   += -g3
 else
-    CFLAGS   += -Os -flto
+    CFLAGS   += -O2
 endif
 
 LFLAGS    = --specs=nano.specs 
